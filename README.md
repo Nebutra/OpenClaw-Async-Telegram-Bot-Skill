@@ -36,13 +36,6 @@ bash scripts/add_async_telegram_bot.sh --token "<BOTFATHER_TOKEN>"
 bash scripts/add_async_telegram_bot.sh --token "<BOTFATHER_TOKEN>" --agent-id "plato-agent"
 ```
 
-## Presentation Style
-
-- Hero-first layout: value proposition + install CTA visible at the top.
-- Clean command hierarchy: install, quick start, then command reference.
-- Safety-forward structure: policy and health checks are explicit and scannable.
-- Distribution-ready links: GitHub, Smithery, and skills.sh are grouped for fast access.
-
 ## Command Reference
 
 ```bash
