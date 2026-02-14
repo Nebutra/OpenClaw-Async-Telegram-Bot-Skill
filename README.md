@@ -36,27 +36,12 @@ bash scripts/add_async_telegram_bot.sh --token "<BOTFATHER_TOKEN>"
 bash scripts/add_async_telegram_bot.sh --token "<BOTFATHER_TOKEN>" --agent-id "plato-agent"
 ```
 
-## Why This Converts for Growth Teams
+## Presentation Style
 
-- Fast activation: go from token to active channel in one command.
-- Safe by default: prevents wrong usernames and unhealthy channel states.
-- Parallel ops ready: one bot per campaign, account, or workflow lane.
-- Deterministic naming: cleaner routing and easier team handoff.
-- Repeatable SOP: operators can scale without hand-editing config files.
-
-## Hacker Growth Playbook
-
-Use this as a bot-fleet growth loop:
-1. Create multiple bots in BotFather using `Nebutra###_bot`.
-2. Run this script to onboard each token.
-3. Bind each bot to a dedicated agent (`--agent-id`).
-4. Assign each bot to a single acquisition channel or audience segment.
-5. Track response quality and conversion by bot/account, then iterate.
-
-Example segmentation:
-- `Socrates` bot for inbound qualification
-- `Plato` bot for onboarding guidance
-- `Aristotle` bot for retention nudges
+- Hero-first layout: value proposition + install CTA visible at the top.
+- Clean command hierarchy: install, quick start, then command reference.
+- Safety-forward structure: policy and health checks are explicit and scannable.
+- Distribution-ready links: GitHub, Smithery, and skills.sh are grouped for fast access.
 
 ## Command Reference
 
