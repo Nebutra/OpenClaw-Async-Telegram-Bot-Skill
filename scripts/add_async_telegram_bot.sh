@@ -21,6 +21,7 @@ AGENT_ID=""
 MODEL_ID="MiniMax-M2.5"
 DRY_RUN=0
 RESTART_GATEWAY=1
+ALLOW_EXISTING_TOKEN=0
 
 usage() {
   cat <<'EOF'
@@ -35,6 +36,7 @@ Optional:
   --name <display name>      Display name (should be philosopher name)
   --agent-id <id>            Create isolated agent bound to telegram:<account-id>
   --model <id>               Model id for new agent (default: MiniMax-M2.5)
+  --allow-existing-token     Allow reusing a token already registered in OpenClaw
   --skip-restart             Do not restart gateway
   --dry-run                  Print planned actions only
   -h, --help                 Show help
@@ -97,6 +99,10 @@ while [[ $# -gt 0 ]]; do
       MODEL_ID="${2:-}"
       shift 2
       ;;
+    --allow-existing-token)
+      ALLOW_EXISTING_TOKEN=1
+      shift
+      ;;
     --dry-run)
       DRY_RUN=1
       shift
@@ -154,9 +160,17 @@ fi
 STATUS_JSON="$(openclaw channels status --json --probe 2>/dev/null || true)"
 EXISTING_BOT_ACCOUNT="$(jq -r --argjson bot_id "$BOT_ID" '((.channelAccounts.telegram // []) | map(select((.probe.bot.id // -1) == $bot_id)) | .[0].accountId) // empty' <<<"$STATUS_JSON" 2>/dev/null || true)"
 
-if [[ -n "$EXISTING_BOT_ACCOUNT" && "$EXISTING_BOT_ACCOUNT" != "$ACCOUNT_ID" ]]; then
-  echo "INFO: bot id $BOT_ID already exists in account '$EXISTING_BOT_ACCOUNT'; reusing it"
-  ACCOUNT_ID="$EXISTING_BOT_ACCOUNT"
+if [[ -n "$EXISTING_BOT_ACCOUNT" ]]; then
+  if (( ALLOW_EXISTING_TOKEN != 1 )); then
+    echo "ERROR: provided token is already registered in OpenClaw account '$EXISTING_BOT_ACCOUNT' (bot id=$BOT_ID)." >&2
+    echo "For a NEW bot, create a fresh token in BotFather (/newbot)." >&2
+    echo "If you intentionally want to update this existing bot, rerun with --allow-existing-token." >&2
+    exit 1
+  fi
+  if [[ "$EXISTING_BOT_ACCOUNT" != "$ACCOUNT_ID" ]]; then
+    echo "INFO: bot id $BOT_ID already exists in account '$EXISTING_BOT_ACCOUNT'; reusing it"
+    ACCOUNT_ID="$EXISTING_BOT_ACCOUNT"
+  fi
 fi
 
 CONFLICT_BOT_ID="$(jq -r --arg account "$ACCOUNT_ID" '((.channelAccounts.telegram // []) | map(select(.accountId == $account)) | .[0].probe.bot.id) // empty' <<<"$STATUS_JSON" 2>/dev/null || true)"
@@ -173,6 +187,7 @@ echo "  username:   $USERNAME"
 echo "  serial:     $SERIAL"
 echo "  account id: $ACCOUNT_ID"
 echo "  name:       $DISPLAY_NAME"
+echo "  allow-existing-token: $ALLOW_EXISTING_TOKEN"
 
 if (( DRY_RUN == 1 )); then
   echo "DRY-RUN: openclaw channels add --channel telegram --account '$ACCOUNT_ID' --name '$DISPLAY_NAME' --token '<redacted>'"

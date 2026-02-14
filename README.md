@@ -11,6 +11,7 @@ Scale one OpenClaw into a multi-bot Telegram fleet in minutes.
 This skill automates Telegram bot onboarding with guardrails:
 - validates tokens with Telegram `getMe`
 - enforces username policy `Nebutra###_bot`
+- requires fresh token for new-bot flow (no silent reuse of old tokens)
 - auto-maps bot naming to Greek philosopher identities
 - wires bots into OpenClaw accounts
 - restarts and health-checks gateway automatically
@@ -53,12 +54,16 @@ bash scripts/add_async_telegram_bot.sh --token "<TOKEN>" --skip-restart
 
 # use a different model when creating agent
 bash scripts/add_async_telegram_bot.sh --token "<TOKEN>" --agent-id "plato-agent" --model "MiniMax-M2.5"
+
+# intentionally reuse a token already registered in OpenClaw (update flow only)
+bash scripts/add_async_telegram_bot.sh --token "<TOKEN>" --allow-existing-token
 ```
 
 ## Safety and Policy
 
 - Username must match: `^Nebutra[0-9]{3}_bot$`
 - Token must pass Telegram API validation
+- New bot flow must use a fresh BotFather token
 - Health checks must pass: `running=true` and `probe.ok=true`
 - Prevents account-id collisions with existing bot IDs
 

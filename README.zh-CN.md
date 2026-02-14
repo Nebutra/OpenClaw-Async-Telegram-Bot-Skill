@@ -11,6 +11,7 @@
 这个 Skill 用一套可重复 SOP 自动完成机器人接入，并带安全护栏：
 - 通过 Telegram `getMe` 校验 Bot Token
 - 强制用户名规则 `Nebutra###_bot`
+- 新建机器人默认要求 fresh token（不再静默复用旧 token）
 - 按序号自动映射古希腊哲学家英文名
 - 自动写入 OpenClaw Telegram 账号配置
 - 自动重启网关并做健康检查
@@ -114,12 +115,16 @@ bash scripts/add_async_telegram_bot.sh --token "<TOKEN>" --skip-restart
 
 # 创建 Agent 时指定模型
 bash scripts/add_async_telegram_bot.sh --token "<TOKEN>" --agent-id "plato-agent" --model "MiniMax-M2.5"
+
+# 明确允许复用已注册 token（仅用于更新场景）
+bash scripts/add_async_telegram_bot.sh --token "<TOKEN>" --allow-existing-token
 ```
 
 ## 安全约束
 
 - 用户名必须匹配：`^Nebutra[0-9]{3}_bot$`
 - Token 必须通过 Telegram API 校验
+- 新建机器人必须使用 BotFather 生成的新 token
 - 健康检查必须通过：`running=true` 且 `probe.ok=true`
 - 自动防止 account-id 与已有 bot-id 冲突
 
