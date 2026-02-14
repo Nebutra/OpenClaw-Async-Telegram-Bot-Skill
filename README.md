@@ -4,6 +4,8 @@
 [![Skill](https://img.shields.io/badge/skill-openclaw--async--telegram--bot-2563eb.svg)](./SKILL.md)
 [![Discover on Smithery](https://img.shields.io/badge/Smithery-Discover-111827.svg)](https://smithery.ai/skills/nebutra/openclaw-async-telegram-bot-skill)
 
+English | [简体中文](./README.zh-CN.md)
+
 Scale one OpenClaw into a multi-bot Telegram fleet in minutes.
 
 This skill automates Telegram bot onboarding with guardrails:
