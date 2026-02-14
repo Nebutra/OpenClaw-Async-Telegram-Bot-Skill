@@ -29,7 +29,13 @@ Alternative discovery pages:
 
 ## Quick Start
 
+Note: `botfather_rpa_assist_mac.sh` requires macOS Accessibility permission for your terminal app (System Settings -> Privacy & Security -> Accessibility).
+
 ```bash
+# Option A (macOS): RPA-assisted flow
+bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle"
+
+# Option B (cross-platform): planning + manual BotFather step
 # 1) Generate BotFather new-bot plan (name + username + next serial)
 bash scripts/prepare_botfather_new_bot.sh
 
@@ -45,6 +51,12 @@ bash scripts/add_async_telegram_bot.sh --token "<BOTFATHER_TOKEN>" --agent-id "p
 ## Command Reference
 
 ```bash
+# macOS RPA-assisted flow (open BotFather + send /newbot + configure OpenClaw)
+bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle"
+
+# macOS RPA-only (no configure yet)
+bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle" --no-configure
+
 # planning helper for BotFather flow
 bash scripts/prepare_botfather_new_bot.sh
 
@@ -84,6 +96,7 @@ bash scripts/add_async_telegram_bot.sh --token "<TOKEN>" --allow-existing-token
 ## Repository Layout
 
 - `SKILL.md` - trigger rules + workflow for agent execution
+- `scripts/botfather_rpa_assist_mac.sh` - macOS RPA assistant for BotFather + OpenClaw configuration
 - `scripts/prepare_botfather_new_bot.sh` - assisted new-bot planning for BotFather
 - `scripts/add_async_telegram_bot.sh` - production onboarding script
 

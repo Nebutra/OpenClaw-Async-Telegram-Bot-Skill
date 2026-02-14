@@ -41,9 +41,9 @@ description: Add or update asynchronous Telegram bot accounts in OpenClaw. Use w
 
 ## Workflow
 
-1. If user asks for a **new bot**, run `prepare_botfather_new_bot.sh` to generate a deterministic BotFather plan.
-2. Send user the generated `display name + username + BotFather steps`.
-3. Wait for user to paste a fresh token from BotFather.
+1. If user asks for a **new bot**, prefer RPA-assisted flow on macOS with `botfather_rpa_assist_mac.sh`.
+2. If RPA is not available, run `prepare_botfather_new_bot.sh` to generate deterministic BotFather inputs.
+3. Get fresh token from BotFather.
 4. Validate token with Telegram `getMe`.
 5. Reject token if username does not match `^Nebutra[0-9]{3}_bot$`.
 6. Reject token if it is already registered in OpenClaw, unless user explicitly confirms update flow.
@@ -52,6 +52,22 @@ description: Add or update asynchronous Telegram bot accounts in OpenClaw. Use w
 9. Optional: create a dedicated isolated agent bound to `telegram:<accountId>`.
 
 ## Command
+
+RPA-assisted end-to-end flow (macOS):
+
+```bash
+bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle"
+```
+
+Optional RPA flags:
+
+```bash
+# include dedicated agent creation
+bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle" --agent-id "aristotle-agent"
+
+# run only the BotFather RPA step (no OpenClaw configuration yet)
+bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle" --no-configure
+```
 
 BotFather-assisted new bot planning:
 

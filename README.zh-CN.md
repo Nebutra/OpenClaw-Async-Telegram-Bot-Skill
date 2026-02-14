@@ -29,7 +29,13 @@ npx skills add https://github.com/Nebutra/OpenClaw-Async-Telegram-Bot-Skill --sk
 
 ## 快速开始
 
+说明：`botfather_rpa_assist_mac.sh` 需要给终端应用开启 macOS 无障碍权限（系统设置 -> 隐私与安全性 -> 辅助功能）。
+
 ```bash
+# 方案 A（macOS）：RPA 辅助闭环
+bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle"
+
+# 方案 B（跨平台）：规划 + 手动 BotFather
 # 1) 自动生成 BotFather 新建计划（名称 + 用户名 + 下一序号）
 bash scripts/prepare_botfather_new_bot.sh
 
@@ -106,6 +112,12 @@ openclaw tui
 ## 命令参考
 
 ```bash
+# macOS RPA 辅助闭环（打开 BotFather + 自动发送 + 配置 OpenClaw）
+bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle"
+
+# 仅执行 BotFather RPA，不落地配置
+bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle" --no-configure
+
 # BotFather 规划助手
 bash scripts/prepare_botfather_new_bot.sh
 
@@ -145,6 +157,7 @@ bash scripts/add_async_telegram_bot.sh --token "<TOKEN>" --allow-existing-token
 ## 仓库结构
 
 - `SKILL.md`：Skill 触发规则与执行流程
+- `scripts/botfather_rpa_assist_mac.sh`：macOS 下 BotFather + OpenClaw 的 RPA 辅助脚本
 - `scripts/prepare_botfather_new_bot.sh`：BotFather 新建流程规划助手
 - `scripts/add_async_telegram_bot.sh`：生产可用的接入脚本
 
