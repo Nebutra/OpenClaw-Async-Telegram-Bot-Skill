@@ -30,6 +30,11 @@ npx skills add https://github.com/Nebutra/OpenClaw-Async-Telegram-Bot-Skill --sk
 ## 快速开始
 
 ```bash
+# 1) 自动生成 BotFather 新建计划（名称 + 用户名 + 下一序号）
+bash scripts/prepare_botfather_new_bot.sh
+
+# 2) 在 BotFather 按计划创建机器人并复制 fresh token
+
 # 新增/更新一个 Telegram Bot 账号
 bash scripts/add_async_telegram_bot.sh --token "<BOTFATHER_TOKEN>"
 
@@ -101,6 +106,15 @@ openclaw tui
 ## 命令参考
 
 ```bash
+# BotFather 规划助手
+bash scripts/prepare_botfather_new_bot.sh
+
+# 强制指定序号和名称
+bash scripts/prepare_botfather_new_bot.sh --serial 2 --name "Aristotle"
+
+# 输出 JSON（给自动化流程用）
+bash scripts/prepare_botfather_new_bot.sh --json
+
 # 指定 account id
 bash scripts/add_async_telegram_bot.sh --token "<TOKEN>" --account-id "plato-007"
 
@@ -131,6 +145,7 @@ bash scripts/add_async_telegram_bot.sh --token "<TOKEN>" --allow-existing-token
 ## 仓库结构
 
 - `SKILL.md`：Skill 触发规则与执行流程
+- `scripts/prepare_botfather_new_bot.sh`：BotFather 新建流程规划助手
 - `scripts/add_async_telegram_bot.sh`：生产可用的接入脚本
 
 ## 依赖

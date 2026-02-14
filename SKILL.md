@@ -41,18 +41,38 @@ description: Add or update asynchronous Telegram bot accounts in OpenClaw. Use w
 
 ## Workflow
 
-1. If user asks for a **new bot**, ask user to create one in BotFather (`/newbot`) and paste the fresh token.
-2. Validate token with Telegram `getMe`.
-3. Reject token if username does not match `^Nebutra[0-9]{3}_bot$`.
-4. Reject token if it is already registered in OpenClaw, unless user explicitly confirms update flow.
-5. Select philosopher display name deterministically from the 3-digit serial in username.
-6. Add/update Telegram account in OpenClaw (`channels add`).
-7. Restart gateway and verify `running + probe.ok=true`.
-8. Optional: create a dedicated isolated agent bound to `telegram:<accountId>`.
+1. If user asks for a **new bot**, run `prepare_botfather_new_bot.sh` to generate a deterministic BotFather plan.
+2. Send user the generated `display name + username + BotFather steps`.
+3. Wait for user to paste a fresh token from BotFather.
+4. Validate token with Telegram `getMe`.
+5. Reject token if username does not match `^Nebutra[0-9]{3}_bot$`.
+6. Reject token if it is already registered in OpenClaw, unless user explicitly confirms update flow.
+7. Add/update Telegram account in OpenClaw (`channels add`).
+8. Restart gateway and verify `running + probe.ok=true`.
+9. Optional: create a dedicated isolated agent bound to `telegram:<accountId>`.
 
 ## Command
 
-Run:
+BotFather-assisted new bot planning:
+
+```bash
+bash scripts/prepare_botfather_new_bot.sh
+```
+
+Optional planning flags:
+
+```bash
+# Force serial (otherwise auto-pick next available)
+bash scripts/prepare_botfather_new_bot.sh --serial 2
+
+# Force display name and include dedicated agent in follow-up command
+bash scripts/prepare_botfather_new_bot.sh --name "Aristotle" --agent-id "aristotle-agent"
+
+# Emit machine-readable JSON for automation
+bash scripts/prepare_botfather_new_bot.sh --json
+```
+
+Configure bot after receiving fresh token:
 
 ```bash
 bash scripts/add_async_telegram_bot.sh --token "<TOKEN>"

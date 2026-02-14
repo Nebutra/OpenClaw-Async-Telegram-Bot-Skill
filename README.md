@@ -30,6 +30,11 @@ Alternative discovery pages:
 ## Quick Start
 
 ```bash
+# 1) Generate BotFather new-bot plan (name + username + next serial)
+bash scripts/prepare_botfather_new_bot.sh
+
+# 2) Create the bot in BotFather with generated values and copy fresh token
+
 # add/update one Telegram bot account
 bash scripts/add_async_telegram_bot.sh --token "<BOTFATHER_TOKEN>"
 
@@ -40,6 +45,15 @@ bash scripts/add_async_telegram_bot.sh --token "<BOTFATHER_TOKEN>" --agent-id "p
 ## Command Reference
 
 ```bash
+# planning helper for BotFather flow
+bash scripts/prepare_botfather_new_bot.sh
+
+# planning helper with forced serial and name
+bash scripts/prepare_botfather_new_bot.sh --serial 2 --name "Aristotle"
+
+# planning helper JSON output for automation
+bash scripts/prepare_botfather_new_bot.sh --json
+
 # force account id
 bash scripts/add_async_telegram_bot.sh --token "<TOKEN>" --account-id "plato-007"
 
@@ -70,6 +84,7 @@ bash scripts/add_async_telegram_bot.sh --token "<TOKEN>" --allow-existing-token
 ## Repository Layout
 
 - `SKILL.md` - trigger rules + workflow for agent execution
+- `scripts/prepare_botfather_new_bot.sh` - assisted new-bot planning for BotFather
 - `scripts/add_async_telegram_bot.sh` - production onboarding script
 
 ## Requirements
