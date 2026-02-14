@@ -7,13 +7,13 @@ description: Add or update asynchronous Telegram bot accounts in OpenClaw. Use w
 
 ## Use This Skill When
 
-- User asks for multiple Telegram bots in parallel ("异步机器人", "多开 bot", "parallel telegram bots")
+- User asks for multiple Telegram bots in parallel ("async bots", "multi-bot setup", "parallel telegram bots")
 - User asks OpenClaw to add a new Telegram bot token itself
 - User wants one bot per account (optionally one bot per dedicated agent)
 
 ## Naming Rules
 
-- Bot username must be `Nebutra[三位数字]_bot` (example: `Nebutra007_bot`)
+- Bot username must be `Nebutra[three-digits]_bot` (example: `Nebutra007_bot`)
 - Bot display name must be an English ancient Greek philosopher name
 - This skill uses this fixed set:
   - `Socrates`
