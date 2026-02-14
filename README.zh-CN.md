@@ -36,6 +36,60 @@ bash scripts/add_async_telegram_bot.sh --token "<BOTFATHER_TOKEN>"
 bash scripts/add_async_telegram_bot.sh --token "<BOTFATHER_TOKEN>" --agent-id "plato-agent"
 ```
 
+## 国内用户：OpenClaw + MiniMax 国内 API 一键配置
+
+如果你使用的是 MiniMax 国内 API，可直接执行下面命令完成覆盖配置（`baseUrl`、`authHeader`、模型窗口、默认模型）：
+
+```bash
+export MINIMAX_API_KEY="你的 MiniMax Key"
+
+bash -c '
+set -euo pipefail
+CFG="$HOME/.openclaw/openclaw.json"
+[ -f "$CFG" ] || { echo "未找到 $CFG，请先运行 openclaw onboard"; exit 1; }
+[ -n "${MINIMAX_API_KEY:-}" ] || { echo "请先设置 MINIMAX_API_KEY"; exit 1; }
+
+TMP="$(mktemp)"
+jq --arg key "$MINIMAX_API_KEY" \
+  '"'"'.models.mode = "merge"
+  | .models.providers.minimax.baseUrl = "https://api.minimaxi.com/anthropic"
+  | .models.providers.minimax.api = "anthropic-messages"
+  | .models.providers.minimax.authHeader = true
+  | .models.providers.minimax.apiKey = $key
+  | .models.providers.minimax.models = [
+      {
+        "id": "MiniMax-M2.5",
+        "name": "MiniMax M2.5",
+        "reasoning": false,
+        "input": ["text"],
+        "cost": { "input": 15, "output": 60, "cacheRead": 2, "cacheWrite": 10 },
+        "contextWindow": 204800,
+        "maxTokens": 8192
+      }
+    ]
+  | .agents.defaults.model.primary = "minimax/MiniMax-M2.5"
+  | .agents.defaults.models["minimax/MiniMax-M2.5"] = (.agents.defaults.models["minimax/MiniMax-M2.5"] // {})
+  | .agents.defaults.contextTokens = 204800
+  | .agents.defaults.thinkingDefault = "off"
+  '"'"' "$CFG" > "$TMP"
+
+mv "$TMP" "$CFG"
+openclaw gateway restart
+openclaw channels status --probe
+'
+```
+
+完成后可用以下命令自检：
+
+```bash
+openclaw tui
+```
+
+预期状态：
+- 模型显示 `minimax/MiniMax-M2.5`
+- 上下文接近 `205k`（即 204800）
+- `think` 默认关闭（`off`）
+
 ## 为什么适合增长团队
 
 - 激活快：从 Token 到可用 Channel 只需一条命令。
@@ -56,6 +110,13 @@ bash scripts/add_async_telegram_bot.sh --token "<BOTFATHER_TOKEN>" --agent-id "p
 - `Socrates`：线索初筛
 - `Plato`：新用户引导
 - `Aristotle`：留存与召回
+
+## MiniMax CodingPlan 邀请码
+
+- 邀请码：`6jBWg7zvmE`
+- 邀请链接（扫码同款，活动页）：https://platform.minimaxi.com/subscribe/coding-plan?code=6jBWg7zvmE&source=img
+
+![MiniMax CodingPlan 邀请海报](./assets/minimax-codingplan-invite.png)
 
 ## 命令参考
 
