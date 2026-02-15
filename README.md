@@ -57,6 +57,9 @@ bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle"
 # macOS RPA-only (no configure yet)
 bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle" --no-configure
 
+# adjust clipboard wait window (seconds)
+bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle" --wait-clipboard 300
+
 # planning helper for BotFather flow
 bash scripts/prepare_botfather_new_bot.sh
 

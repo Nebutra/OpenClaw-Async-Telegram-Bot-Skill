@@ -67,6 +67,9 @@ bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle" --agent-id "aristotl
 
 # run only the BotFather RPA step (no OpenClaw configuration yet)
 bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle" --no-configure
+
+# extend clipboard wait window for auto-token pickup
+bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle" --wait-clipboard 300
 ```
 
 BotFather-assisted new bot planning:

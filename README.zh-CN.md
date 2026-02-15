@@ -118,6 +118,9 @@ bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle"
 # 仅执行 BotFather RPA，不落地配置
 bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle" --no-configure
 
+# 调整剪贴板自动等待时长（秒）
+bash scripts/botfather_rpa_assist_mac.sh --name "Aristotle" --wait-clipboard 300
+
 # BotFather 规划助手
 bash scripts/prepare_botfather_new_bot.sh
 

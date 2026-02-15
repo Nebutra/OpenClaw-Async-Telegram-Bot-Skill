@@ -22,6 +22,7 @@ ACCOUNT_ID=""
 AGENT_ID=""
 MODEL_ID="MiniMax-M2.5"
 EMIT_JSON=0
+CHECK_PUBLIC_USERNAME=1
 
 usage() {
   cat <<'EOF'
@@ -36,6 +37,7 @@ Options:
   --account-id <id>        Force OpenClaw account id
   --agent-id <id>          Include isolated agent creation in follow-up command
   --model <id>             Model id for optional agent creation (default: MiniMax-M2.5)
+  --no-public-check        Do not check username existence on t.me
   --json                   Emit machine-readable JSON
   -h, --help               Show help
 EOF
@@ -67,6 +69,16 @@ pick_philosopher() {
   local serial="$1"
   local idx=$((serial % ${#PHILOSOPHERS[@]}))
   printf '%s' "${PHILOSOPHERS[$idx]}"
+}
+
+username_exists_public() {
+  local username="$1"
+  local html
+  html="$(curl -fsSL "https://t.me/${username}" 2>/dev/null || true)"
+  [[ -n "$html" ]] || return 1
+  # Existing public usernames usually render a title block.
+  # Non-existing usernames generally do not include this block.
+  rg -q '<div class="tgme_page_title">' <<<"$html"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -103,6 +115,10 @@ while [[ $# -gt 0 ]]; do
       EMIT_JSON=1
       shift
       ;;
+    --no-public-check)
+      CHECK_PUBLIC_USERNAME=0
+      shift
+      ;;
     -h|--help)
       usage
       exit 0
@@ -131,6 +147,8 @@ fi
 
 need_cmd jq
 need_cmd openclaw
+need_cmd curl
+need_cmd rg
 
 status_json="$(openclaw channels status --json --probe 2>/dev/null || echo '{}')"
 
@@ -168,6 +186,19 @@ fi
 
 serial_pad="$(printf "%0${DIGITS}d" "$SERIAL")"
 username="${PREFIX}${serial_pad}_bot"
+
+if (( CHECK_PUBLIC_USERNAME == 1 )); then
+  # Skip occupied usernames (for example, created earlier but not yet configured locally).
+  while username_exists_public "$username"; do
+    SERIAL=$((SERIAL + 1))
+    if (( SERIAL > max_serial )); then
+      echo "ERROR: no available username left for prefix '$PREFIX' and digits=$DIGITS" >&2
+      exit 1
+    fi
+    serial_pad="$(printf "%0${DIGITS}d" "$SERIAL")"
+    username="${PREFIX}${serial_pad}_bot"
+  done
+fi
 
 if [[ -z "$DISPLAY_NAME" ]]; then
   DISPLAY_NAME="$(pick_philosopher "$SERIAL")"
@@ -232,4 +263,3 @@ BotFather Steps
 Follow-up Command
   ${add_cmd[*]}
 EOF
-

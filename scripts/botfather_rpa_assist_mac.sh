@@ -11,6 +11,7 @@ MODEL_ID="MiniMax-M2.5"
 TOKEN=""
 NO_CONFIGURE=0
 YES=0
+WAIT_CLIPBOARD_SECONDS=180
 
 usage() {
   cat <<'EOF'
@@ -33,6 +34,7 @@ Options:
   --agent-id <id>          Create isolated agent bound to this account
   --model <id>             Model id for optional agent creation
   --token <token>          Skip prompt and configure directly with token
+  --wait-clipboard <sec>   Auto-wait clipboard for token (default: 180)
   --no-configure           Only perform BotFather RPA; do not configure OpenClaw
   --yes                    Non-interactive confirmation for prompts
   -h, --help               Show help
@@ -85,6 +87,36 @@ end tell
 APPLESCRIPT
 }
 
+validate_token_for_username() {
+  local token="$1"
+  local expected_username="$2"
+  local resp ok uname
+  resp="$(curl -sS "https://api.telegram.org/bot${token}/getMe" || true)"
+  ok="$(jq -r '.ok // false' <<<"$resp" 2>/dev/null || echo false)"
+  if [[ "$ok" != "true" ]]; then
+    return 1
+  fi
+  uname="$(jq -r '.result.username // empty' <<<"$resp" 2>/dev/null || true)"
+  [[ "$uname" == "$expected_username" ]]
+}
+
+wait_token_from_clipboard() {
+  local expected_username="$1"
+  local timeout="$2"
+  local clip
+  for _ in $(seq 1 "$timeout"); do
+    clip="$(pbpaste 2>/dev/null | tr -d '\r' | tr '\n' ' ' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//' || true)"
+    if [[ "$clip" =~ ^[0-9]{7,12}:[A-Za-z0-9_-]{25,}$ ]]; then
+      if validate_token_for_username "$clip" "$expected_username"; then
+        printf '%s' "$clip"
+        return 0
+      fi
+    fi
+    sleep 1
+  done
+  return 1
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --name)
@@ -119,6 +151,10 @@ while [[ $# -gt 0 ]]; do
       TOKEN="${2:-}"
       shift 2
       ;;
+    --wait-clipboard)
+      WAIT_CLIPBOARD_SECONDS="${2:-}"
+      shift 2
+      ;;
     --no-configure)
       NO_CONFIGURE=1
       shift
@@ -148,6 +184,7 @@ need_cmd open
 need_cmd osascript
 need_cmd pbcopy
 need_cmd pbpaste
+need_cmd curl
 need_cmd jq
 need_cmd bash
 
@@ -235,15 +272,27 @@ if (( NO_CONFIGURE == 1 )); then
 fi
 
 if [[ -z "$TOKEN" ]]; then
-  if (( YES == 1 )); then
-    echo "ERROR: --yes mode requires --token unless --no-configure is used." >&2
+  if [[ ! "$WAIT_CLIPBOARD_SECONDS" =~ ^[0-9]+$ ]]; then
+    echo "ERROR: --wait-clipboard must be an integer." >&2
     exit 1
   fi
-  echo
-  echo "BotFather should now return a fresh token."
-  read -r -p "Paste fresh token here (leave empty to use clipboard): " TOKEN
+  if (( WAIT_CLIPBOARD_SECONDS > 0 )); then
+    echo "Waiting for fresh token in clipboard for up to ${WAIT_CLIPBOARD_SECONDS}s..."
+    if TOKEN="$(wait_token_from_clipboard "$USERNAME" "$WAIT_CLIPBOARD_SECONDS")"; then
+      echo "Clipboard token detected and verified for @$USERNAME."
+    fi
+  fi
   if [[ -z "$TOKEN" ]]; then
-    TOKEN="$(pbpaste)"
+    if (( YES == 1 )); then
+      echo "ERROR: token not found in clipboard during wait window." >&2
+      exit 1
+    fi
+    echo
+    echo "BotFather should now return a fresh token."
+    read -r -p "Paste fresh token here (leave empty to use clipboard): " TOKEN
+    if [[ -z "$TOKEN" ]]; then
+      TOKEN="$(pbpaste)"
+    fi
   fi
 fi
 
